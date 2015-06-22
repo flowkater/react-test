@@ -4,17 +4,29 @@
 
 DOM = React.DOM
 
+Separator = React.createClass
+	displayName: "Separator"
+	render: () ->
+		children = []
+		for child, i in @props.children
+			children.push( child )
+			if i < @props.children.length - 1
+				children.push(
+					DOM.div
+						key: "separator-#{i}"
+						className: "col-lg-offset-2 col-lg-10"
+						DOM.hr
+							className:"form-input-separator"
+				)
+		DOM.div(null, children)
+
+separator = React.createFactory(Separator)
+
 FormInputWithLabel = React.createClass
 	getDefaultProps: ->
 		elementType: "input"		
 		inputType: "text"
 	displayName: "FormInputWithLabel"
-
-	tagType: ->
-		{
-			"input": @props.inputType,
-			"textarea": null
-		}[@props.elementType]
 
 	render: ->
 		DOM.div
@@ -30,10 +42,16 @@ FormInputWithLabel = React.createClass
 					className: "form-control"
 					placeholder: @props.placeholder
 					id: @props.id
-					type: "text"
 					value: @props.value 
 					onChange: @props.onChange
 					type: @tagType()
+
+	tagType: ->
+		{
+			"input": @props.inputType,
+			"textarea": null
+		}[@props.elementType]
+
 	warning: ->
 		return null unless @props.warning
 		DOM.label
@@ -170,7 +188,7 @@ CreateNewMeetupForm = React.createClass
 				guests: [""],
 				warnings: {
 					title: null
-				}	
+				},
 			}
 		}
 
@@ -187,19 +205,19 @@ CreateNewMeetupForm = React.createClass
 	fieldChanged: (fieldName, event) ->
 		@state.meetup[fieldName] = event.target.value
 		@validateField(fieldName)
-		@forceUpdate
+		@forceUpdate()
 
 	validateField: (fieldName, value) ->
 		validator = {
 			title: (text) ->
-				if /\s/.test(text) then null else "Cannot be blank"
+				if /\S/.test(text) then null else "Cannot be blank"
 		}[fieldName]
 		return unless validator
 		@state.meetup.warnings[fieldName] = validator( @state.meetup[fieldName] )
 
 	seoChanged: (seoText) ->
 		@state.meetup.seoText = seoText
-		@forceUpdate
+		@forceUpdate()
 
 	computeDefaultSeoText: () ->
 		words = @state.meetup.title.split(/\s+/)
@@ -212,8 +230,9 @@ CreateNewMeetupForm = React.createClass
 			@validateField(field)
 
 	formSubmitted: (event) ->
-		@validateAll
-		@forceUpdate
+		event.preventDefault()
+		@validateAll()
+		@forceUpdate()
 
 		for own key of @state.meetup
 			return if @state.meetup.warnings[key]
@@ -248,7 +267,7 @@ CreateNewMeetupForm = React.createClass
 		if (guests.length >= 2 && lastEmail == "" && penultimateEmail == "")
 			guests.pop()
 
-		@forceUpdate
+		@forceUpdate()
 
 	render: ->
 		DOM.form
@@ -286,14 +305,15 @@ CreateNewMeetupForm = React.createClass
 
 			DOM.fieldset null,
 				DOM.legend null, "Guests"
-				for guest, n in @state.meetup.guests
-					formInputWithLabel
-						id: "email"
-						key: "guest-#{n}"
-						value: guest
-						onChange: @guestEmailChanged.bind(null, n)
-						placeholder: "Email address of invitee"
-						labelText: "Email"
+				separator null,
+					for guest, n in @state.meetup.guests
+						formInputWithLabel
+							id: "email"
+							key: "guest-#{n}"
+							value: guest
+							onChange: @guestEmailChanged.bind(null, n)
+							placeholder: "Email address of invitee"
+							labelText: "Email"
 
 			DOM.div
 				className: "form-group"
