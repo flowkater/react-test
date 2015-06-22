@@ -132,6 +132,23 @@ FormInputWithLabelAndReset = React.createClass
 						value: @props.value
 						onChange: (event) =>
 							@props.onChange(event.target.value)
+					DOM.span
+						className: "input-group-btn"
+						DOM.button
+							onClick: () =>
+								@props.onChange(null)
+							className: "btn btn-default"
+							type: "button"
+							DOM.i
+								className: "fa fa-magic"
+						DOM.button
+							onClick: () =>
+								@props.onChange("")
+							className: "btn btn-default"
+							type: "button"
+							DOM.i
+								className: "fa fa-times-circle"
+
 
 formInputWithLabelAndReset = React.createFactory(FormInputWithLabelAndReset)
 
@@ -181,6 +198,7 @@ CreateNewMeetupForm = React.createClass
 				title: @state.title
 				description: @state.description
 				date: "#{@state.date.getFullYear()}-#{@state.date.getMonth() + 1}-#{@state.date.getDate()}"
+				seo: @state.seoText || @computeDefaultSeoText()
 			}})
 
 	render: ->
