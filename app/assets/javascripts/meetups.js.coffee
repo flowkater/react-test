@@ -8,7 +8,6 @@ FormInputWithLabel = React.createClass
 	getDefaultProps: ->
 		elementType: "input"		
 		inputType: "text"
-
 	displayName: "FormInputWithLabel"
 
 	tagType: ->
@@ -25,15 +24,22 @@ FormInputWithLabel = React.createClass
 				className: "col-lg-2 control-label"
 				@props.labelText
 			DOM.div
-				className: "col-lg-10"
+				className: classNames('col-lg-10': true, 'has-warning': @props.warning)
+				@warning()
 				DOM[@props.elementType]
 					className: "form-control"
 					placeholder: @props.placeholder
 					id: @props.id
 					type: "text"
-					value: @props.value
+					value: @props.value 
 					onChange: @props.onChange
 					type: @tagType()
+	warning: ->
+		return null unless @props.warning
+		DOM.label
+			className: "control-label"
+			htmlFor: @props.id
+			@props.warning
 
 
 formInputWithLabel = React.createFactory(FormInputWithLabel)
@@ -159,7 +165,10 @@ CreateNewMeetupForm = React.createClass
 			title: "",
 			description: "",
 			date: new Date(),
-			seoText: null
+			seoText: null,
+			warnings: {
+				title: null
+			}
 		}
 
 	monthName: (monthNumberStartingFromZero) ->
@@ -175,6 +184,17 @@ CreateNewMeetupForm = React.createClass
 		stateUpdate = {}
 		stateUpdate[fieldName] = event.target.value
 		@setState(stateUpdate)
+		@validateField(fieldName, event.target.value)
+
+	validateField: (fieldName, value) ->
+		validator = {
+			title: (text) ->
+				if /\s/.test(text) then null else "Cannot be blank"
+		}[fieldName]
+		return unless validator
+		warnings = @state.warnings
+		warnings[fieldName] = validator(value)
+		@setState(warnings: warnings)
 
 	seoChanged: (seoText) ->
 		@setState(seoText: seoText)
@@ -214,6 +234,7 @@ CreateNewMeetupForm = React.createClass
 					onChange: @fieldChanged.bind(null, "title")
 					placeholder: "Meetup title"
 					labelText: "Title"
+					warning: @state.warnings.title
 
 				formInputWithLabel
 					id: "description"
