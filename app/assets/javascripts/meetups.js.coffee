@@ -181,10 +181,10 @@ CreateNewMeetupForm = React.createClass
 		@setState(date: newDate)
 
 	fieldChanged: (fieldName, event) ->
-		stateUpdate = {}
-		stateUpdate[fieldName] = event.target.value
-		@setState(stateUpdate)
-		@validateField(fieldName, event.target.value)
+		newState = $.extend(true, {}, @state)
+		newState[fieldName] = event.target.value
+		newState['warnings'][fieldName] = @validateField(fieldName, event.target.value)
+		@setState(newState)
 
 	validateField: (fieldName, value) ->
 		validator = {
@@ -192,9 +192,8 @@ CreateNewMeetupForm = React.createClass
 				if /\s/.test(text) then null else "Cannot be blank"
 		}[fieldName]
 		return unless validator
-		warnings = @state.warnings
-		warnings[fieldName] = validator(value)
-		@setState(warnings: warnings)
+		validator(value)
+		
 
 	seoChanged: (seoText) ->
 		@setState(seoText: seoText)
