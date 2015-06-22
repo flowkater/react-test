@@ -24,37 +24,37 @@
 # 		document.body
 # 	)
 
-	# element = React.createElement(OneTimeClickLink)
+# 	element = React.createElement(OneTimeClickLink)
 
-	# virtualDomAfterClick = React.DOM.div(
-	# 	{id: "render-me-react-please"},
-	# 	React.DOM.span({}, "You clicked the link")
-	# )
+# 	virtualDomAfterClick = React.DOM.div(
+# 		{id: "render-me-react-please"},
+# 		React.DOM.span({}, "You clicked the link")
+# 	)
 
-	# linkClicked = (event) ->
-	# 	React.render(
-	# 		virtualDomAfterClick,
-	# 		document.body
-	# 	)
-	# 	# console.log(event)
-	# 	# console.log(event.target)
-	# 	# alert("you clicked me")
+# 	linkClicked = (event) ->
+# 		React.render(
+# 			virtualDomAfterClick,
+# 			document.body
+# 		)
+# 		# console.log(event)
+# 		# console.log(event.target)
+# 		# alert("you clicked me")
 
-	# virtualDom = React.DOM.div(
-	# 	{id: "render-me-react-please"},
-	# 	React.DOM.a(
-	# 		{href: "javascript:void(0)", onClick: linkClicked},
-	# 		"Click Me"
-	# 	)
-	# )
+# 	virtualDom = React.DOM.div(
+# 		{id: "render-me-react-please"},
+# 		React.DOM.a(
+# 			{href: "javascript:void(0)", onClick: linkClicked},
+# 			"Click Me"
+# 		)
+# 	)
 
-	# React.render(
-	# 	virtualDom,
-	# 	document.body
-	# )
+# 	React.render(
+# 		virtualDom,
+# 		document.body
+# 	)
 		
 	
-  # React.render(
-  #   React.DOM.div({id: "render-me-react-please"}, "Hello world!"),
-  #   document.body
-  # )
+#   React.render(
+#     React.DOM.div({id: "render-me-react-please"}, "Hello world!"),
+#     document.body
+#   )

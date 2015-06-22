@@ -1,6 +1,6 @@
-# Place all the behaviors and hooks related to the matching controller here.
-# All this logic will automatically be available in application.js.
-# You can use CoffeeScript in this file: http://coffeescript.org/
+# # Place all the behaviors and hooks related to the matching controller here.
+# # All this logic will automatically be available in application.js.
+# # You can use CoffeeScript in this file: http://coffeescript.org/
 
 DOM = React.DOM
 
@@ -124,12 +124,14 @@ FormInputWithLabelAndReset = React.createClass
 			DOM.div
 				className: "col-lg-8"
 				DOM.div
-					className: "form-control"
-					placeholder: @props.placeholder
-					id: @props.id
-					value: @props.value
-					onChange: (event) =>
-						@props.onChange(event.target.value)
+					className: "input-group"
+					DOM.input
+						className: "form-control"
+						placeholder: @props.placeholder
+						id: @props.id
+						value: @props.value
+						onChange: (event) =>
+							@props.onChange(event.target.value)
 
 formInputWithLabelAndReset = React.createFactory(FormInputWithLabelAndReset)
 
@@ -142,6 +144,12 @@ CreateNewMeetupForm = React.createClass
 			date: new Date(),
 			seoText: null
 		}
+
+	monthName: (monthNumberStartingFromZero) ->
+		[
+			"January", "February", "March", "April", "May", "June", "July",
+			"August", "September", "October", "November", "December"
+		][monthNumberStartingFromZero]
 
 	dateChanged: (newDate) ->
 		@setState(date: newDate)
@@ -156,7 +164,7 @@ CreateNewMeetupForm = React.createClass
 
 	computeDefaultSeoText: () ->
 		words = @state.title.toLowerCase().split(/\s+/)
-		# words.push(monthName(@state.date.getMonth()))
+		words.push(@monthName(@state.date.getMonth()))
 		words.push(@state.date.getFullYear().toString())
 		words.filter( (string) -> string.trim().length > 0).join("-").toLowerCase()
 
