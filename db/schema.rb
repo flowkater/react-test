@@ -11,16 +11,23 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150622075143) do
+ActiveRecord::Schema.define(version: 20150622101151) do
 
   create_table "meetups", force: true do |t|
     t.string   "title"
     t.text     "description"
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.date     "date",        null: false
+    t.date     "date",                          null: false
     t.string   "seo"
     t.text     "guests"
+    t.string   "technology",  default: "Rails", null: false
+  end
+
+  create_table "technologies", force: true do |t|
+    t.string   "name"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
 end
