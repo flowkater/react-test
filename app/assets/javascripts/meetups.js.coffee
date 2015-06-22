@@ -162,12 +162,14 @@ CreateNewMeetupForm = React.createClass
 	displayName: "CreateNewMeetupForm"
 	getInitialState: ->
 		{
-			title: "",
-			description: "",
-			date: new Date(),
-			seoText: null,
-			warnings: {
-				title: null
+			meetup: {
+				title: "",
+				description: "",
+				date: new Date(),
+				seoText: null,
+				warnings: {
+					title: null
+				}	
 			}
 		}
 
@@ -178,13 +180,13 @@ CreateNewMeetupForm = React.createClass
 		][monthNumberStartingFromZero]
 
 	dateChanged: (newDate) ->
-		@setState(date: newDate)
+		@state.meetup.date = newDate
+		@forceUpdate()
 
 	fieldChanged: (fieldName, event) ->
-		newState = $.extend(true, {}, @state)
-		newState[fieldName] = event.target.value
-		newState['warnings'][fieldName] = @validateField(fieldName, event.target.value)
-		@setState(newState)
+		@state.meetup[fieldName] = event.target.value
+		@validateField(fieldName)
+		@forceUpdate
 
 	validateField: (fieldName, value) ->
 		validator = {
@@ -192,20 +194,28 @@ CreateNewMeetupForm = React.createClass
 				if /\s/.test(text) then null else "Cannot be blank"
 		}[fieldName]
 		return unless validator
-		validator(value)
-		
+		@state.meetup.warnings[fieldName] = validator( @state.meetup[fieldName] )
 
 	seoChanged: (seoText) ->
-		@setState(seoText: seoText)
+		@state.meetup.seoText = seoText
+		@forceUpdate
 
 	computeDefaultSeoText: () ->
-		words = @state.title.toLowerCase().split(/\s+/)
-		words.push(@monthName(@state.date.getMonth()))
-		words.push(@state.date.getFullYear().toString())
+		words = @state.meetup.title.split(/\s+/)
+		words.push(@monthName(@state.meetup.date.getMonth()))
+		words.push(@state.meetup.date.getFullYear().toString())
 		words.filter( (string) -> string.trim().length > 0).join("-").toLowerCase()
 
+	validateAll:() ->
+		for field in ['title']
+			@validateField(field)
+
 	formSubmitted: (event) ->
-		event.preventDefault()
+		@validateAll
+		@forceUpdate
+
+		for own key of @state.meetup
+			return if @state.meetup.warnings[key]
 
 		$.ajax
 			url: "/meetups.json",
@@ -214,9 +224,13 @@ CreateNewMeetupForm = React.createClass
 			contentType: "application/json",
 			processData: false,
 			data: JSON.stringify({meetup: {
-				title: @state.title
-				description: @state.description
-				date: "#{@state.date.getFullYear()}-#{@state.date.getMonth() + 1}-#{@state.date.getDate()}"
+				title: @state.meetup.title
+				description: @state.meetup.description
+				date: [
+					@state.meetup.date.getFullYear(),
+					@state.meetup.date.getMonth() + 1,
+					@state.meetup.date.getDate()
+				].join("-")
 				seo: @state.seoText || @computeDefaultSeoText()
 			}})
 
@@ -229,15 +243,15 @@ CreateNewMeetupForm = React.createClass
 
 				formInputWithLabel
 					id: "title"
-					value: @state.title
+					value: @state.meetup.title
 					onChange: @fieldChanged.bind(null, "title")
 					placeholder: "Meetup title"
 					labelText: "Title"
-					warning: @state.warnings.title
+					warning: @state.meetup.warnings.title
 
 				formInputWithLabel
 					id: "description"
-					value: @state.description
+					value: @state.meetup.description
 					onChange: @fieldChanged.bind(null, "description")
 					placeholder: "Meetup description"
 					labelText: "Description"
@@ -245,11 +259,11 @@ CreateNewMeetupForm = React.createClass
 
 				dateWithLabel
 					onChange: @dateChanged
-					date: @state.date
+					date: @state.meetup.date
 
 				formInputWithLabelAndReset
 					id: "seo"
-					value: if @state.seoText? then @state.seoText else @computeDefaultSeoText()
+					value: if @state.meetup.seoText? then @state.meetup.seoText else @computeDefaultSeoText()
 					onChange: @seoChanged
 					placeholder: "SEO text"
 					labelText: "seo"
