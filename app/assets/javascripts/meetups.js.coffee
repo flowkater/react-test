@@ -167,6 +167,7 @@ CreateNewMeetupForm = React.createClass
 				description: "",
 				date: new Date(),
 				seoText: null,
+				guests: [""],
 				warnings: {
 					title: null
 				}	
@@ -232,7 +233,22 @@ CreateNewMeetupForm = React.createClass
 					@state.meetup.date.getDate()
 				].join("-")
 				seo: @state.seoText || @computeDefaultSeoText()
+				guests: @state.meetup.guests
 			}})
+
+	guestEmailChanged: (number, event) ->
+		guests = @state.meetup.guests
+		guests[number] = event.target.value
+
+		lastEmail = guests[guests.length - 1]
+		penultimateEmail = guests[guests.length - 2]
+
+		if (lastEmail != "")
+			guests.push("")
+		if (guests.length >= 2 && lastEmail == "" && penultimateEmail == "")
+			guests.pop()
+
+		@forceUpdate
 
 	render: ->
 		DOM.form
@@ -268,15 +284,27 @@ CreateNewMeetupForm = React.createClass
 					placeholder: "SEO text"
 					labelText: "seo"
 
-				DOM.div
-					className: "form-group"
-					DOM.div
-						className: "col-lg-10 col-lg-offset-2"
-						DOM.button
-							type: "submit"
-							className: "btn btn-primary"
-							"Save"
+			DOM.fieldset null,
+				DOM.legend null, "Guests"
+				for guest, n in @state.meetup.guests
+					formInputWithLabel
+						id: "email"
+						key: "guest-#{n}"
+						value: guest
+						onChange: @guestEmailChanged.bind(null, n)
+						placeholder: "Email address of invitee"
+						labelText: "Email"
 
+			DOM.div
+				className: "form-group"
+				DOM.div
+					className: "col-lg-10 col-lg-offset-2"
+					DOM.button
+						type: "submit"
+						className: "btn btn-primary"
+						"Save"
+
+			
 createNewMeetupForm = React.createFactory(CreateNewMeetupForm)
 
 $ ->
